@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PointHistory {
 
-    // fixme: ID 생성 전략을 고민해야하는 이유
+    // todo: ID 생성 전략을 고민해야하는 이유
     //      1. 대량의 데이터를 삽입할 경우, 내부적으로 Auto Increment Lock이 발생한다. (innodb_autoinc_lock_mode)
-    //      2. 반면, Auto Increment가 아닌 경우, Primary Key Index Table 순서는?
+    //      2. 반면, Auto Increment가 아닌 경우, Primary Key Index Table 순서는? 동일한 키 값을 가질 확률은?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
