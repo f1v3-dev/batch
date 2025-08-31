@@ -23,20 +23,19 @@ public class PointHistoryBulkRepositoryV1 {
     /*
     TODO: 생각해볼만한 점
         1. 배치의 타임아웃 설정은 어떻게 해야할까?
-        2. 트랜잭션 관련 설정은 어떻게 해야할까? (Isolation Level, Rollback 등)
+        2. 트랜잭션 관련 설정은 어떻게 해야할까? (propagation, Rollback 등)
         3. 에러 발생시 재시도는 어느 시점부터 해야할까? - 아예 처음부터? 끊긴 부분을 알 수 있을까?
         4. 배치 사이즈는 동적으로 조절하는게 좋은걸까? -> JVM Heap 메모리 상황에 영향을 미치진 않을까?
-        5. 재시도 로직은 어떻게 구성해야 할까? (실패 처리에 대해서 고려해봐야 함.) -> 트랜잭션 범위랑 같이 고민
+        5. 재시도 로직은 어떻게 구성해야 할까? (.실패 처리에 대해서 고려해봐야 함) -> 트랜잭션 범위랑 같이 고민
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveAllInBatches(List<PointHistory> list, int batchSize) {
 
         String sql = """
                 INSERT INTO point_history 
-                    (member_id, points, balance_after, transaction_type, earn_reason, spend_reason, description, batch_processed, created_at)
+                    (member_id, points, balance_after, transaction_type, earn_reason, spend_reason, descript, batch_processed, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-
 
         for (int i = 0; i < list.size(); i += batchSize) {
             int endIndex = Math.min(i + batchSize, list.size());
@@ -66,8 +65,8 @@ public class PointHistoryBulkRepositoryV1 {
                                 ps.setNull(6, Types.VARCHAR);
                             }
 
-                            if (ph.getDescription() != null) {
-                                ps.setString(7, ph.getDescription());
+                            if (ph.getDescript() != null) {
+                                ps.setString(7, ph.getDescript());
                             } else {
                                 ps.setNull(7, Types.VARCHAR);
                             }

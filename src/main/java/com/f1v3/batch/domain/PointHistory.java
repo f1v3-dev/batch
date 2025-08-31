@@ -32,7 +32,7 @@ public class PointHistory {
     private Integer points;
 
     @Column(name = "balance_after", nullable = false)
-    private Integer balanceAfter;
+    private Integer balanceAfter; // current point balance
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
@@ -47,7 +47,7 @@ public class PointHistory {
     private SpendReason spendReason;
 
     @Column(length = 255)
-    private String description;
+    private String descript;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
@@ -63,7 +63,7 @@ public class PointHistory {
         private TransactionType transactionType;
         private EarnReason earnReason;
         private SpendReason spendReason;
-        private String description;
+        private String descript;
         private LocalDateTime createdAt;
 
         public Builder memberId(Long memberId) {
@@ -96,8 +96,8 @@ public class PointHistory {
             return this;
         }
 
-        public Builder description(String description) {
-            this.description = description;
+        public Builder descript(String description) {
+            this.descript = description;
             return this;
         }
 
@@ -118,7 +118,7 @@ public class PointHistory {
                     transactionType,
                     earnReason,
                     spendReason,
-                    description,
+                    descript,
                     createdAt != null ? createdAt : LocalDateTime.now(),
                     batchProcessed
             );
