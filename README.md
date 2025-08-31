@@ -3,9 +3,23 @@
 상점에서 아이템을 구매할 때 '포인트'를 사용하는 시스템에서, 포인트 사용 내역을 기록하는 테이블이 필요하다.  
 이 테이블의 내용을 기반으로 포인트 적립/사용 통계를 만들 수 있으며, 월별 회원 등급 산정에도 활용할 수 있다.
 
-특히, 100만 건 이상의 대량 히스토리 데이터를 효율적으로 처리해야 하는 요구사항이 발생했다고 가정하고, 단순한 CRUD를 넘어서 성능, 확장성, 안정성을 모두 고려한 배치 처리 시스템을 설계해보자.
+특히, 100만 건 이상의 대량 히스토리 데이터를 효율적으로 처리해야 하는 요구사항이 있다고 가정하고, 단순한 CRUD를 넘어서 성능, 확장성, 안정성을 모두 고려한 배치 처리 시스템을 설계해보자.
 
 ## 테이블 구조
+
+_회원 테이블_
+```sql
+CREATE TABLE member
+(
+    id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name      VARCHAR(100)                                  NOT NULL,
+    grade     ENUM ('BRONZE', 'SILVER', 'GOLD', 'PLATINUM') NOT NULL DEFAULT 'BRONZE',
+    is_active BOOLEAN                                       NOT NULL DEFAULT TRUE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+```
+
+_포인트 히스토리 테이블_
 
 ```sql
 -- 1. 포인트 히스토리 테이블 생성
@@ -18,7 +32,7 @@ CREATE TABLE point_history
     spend_reason     ENUM ('GACHA', 'ADMIN_ADJUSTMENT'),
     points           INT                    NOT NULL,
     balance_after    INT                    NOT NULL,
-    description      VARCHAR(255),
+    descript      VARCHAR(255),
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     batch_processed  BOOLEAN   DEFAULT FALSE
 ) ENGINE = InnoDB
@@ -162,8 +176,36 @@ INSERT INTO table VALUES (?);
 INSERT INTO table VALUES (1),(2),(3);
 ```
 
+
+추가적으로 InnoDB 설정을 조정하여 대량 INSERT 작업의 성능을 올릴 수 있다고 한다.
+
 ```sql
 SET innodb_buffer_pool_size = '8G';
 SET innodb_change_buffering = 'all';
 SET innodb_max_dirty_pages_pct = 90;
 ```
+
+- 메모리 활용 극대화: 8GB 버퍼 풀 + 90% dirty pages = 대용량 데이터를 메모리에서 처리
+- I/O 최적화: Change buffering + dirty pages 지연 = 디스크 접근 최소화
+
+---
+
+# 고민되는 것들
+
+## 1. 트랜잭션의 전파 옵션
+
+배치 처리 작업 자체를 하나의 트랜잭션으로 보는게 맞을까? 아니면, 청크 단위로 트랜잭션을 나누는게 좋을까?
+
+나눴을 때의 장점으로는 롤백, 재시도 시점이 명확해지지만 단점으로는 각 작업이 독립적인 트랜잭션/커넥션을 사용하게 된다.
+
+## 2. 배치를 실패했을 때의 동작
+
+배치 작업이 실패했을 때 단순 `Retry` 로 해결할 수 있을까? 계속해서 실패한다면 어떻게 대응해야할까?
+
+적절한 재시도 횟수 및 간격을 설정하고 개발자가 직접 재시도를 수행할 수 있는 별도의 API를 제공하는 것도 방법이 될 수 있다.
+
+## 3. 적절한 배치 사이즈 
+
+너무 과도한 크기로 설정한다면 OOM(OutOfMemoryError)이 발생할 수 있으며, 데이터베이스 측에서도 너무 큰 트랜잭션을 처리하는데 부담이 될 수 있다.
+
+반면 너무 작은 크기로 설정한다면 네트워크 왕복이 많아진다. 
