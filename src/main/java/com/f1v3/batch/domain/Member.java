@@ -1,45 +1,40 @@
 package com.f1v3.batch.domain;
 
-import com.f1v3.batch.domain.enums.MemberGrade;
+import com.f1v3.batch.domain.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
+@Getter
 @Entity
+@Table(name = "members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @Column(nullable = false)
-    private String name;
+    private String password;
+
+    @Column(nullable = false)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MemberGrade grade;
+    private MemberRole role;
 
-    @Column(nullable = false)
-    private boolean isActive;
-
-    public Member(Long id, String name, MemberGrade grade) {
-        this.id = id;
-        this.name = name;
-        this.grade = grade;
-        this.isActive = true;
+    @Builder
+    public Member(String username, String password, String email, MemberRole role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
     }
-
-    // todo: 등급 계산?
-    //   - 배치를 통해 한 번에 모든 회원의 등급을 처리
 }
-
-/*
-CREATE TABLE member (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    grade VARCHAR(20) NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE
-);
- */
