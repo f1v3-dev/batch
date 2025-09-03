@@ -38,7 +38,63 @@
 - **전문 검색**: MySQL FULLTEXT 검색 지원 (향후 확장)
 - 검색 성능 최적화를 위한 인덱스 설정
 
----
+
+# 테이블 구조
+
+### 회원 테이블(members)
+
+```sql
+CREATE TABLE `members`
+(
+    `id`         bigint                             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `email`      varchar(255)                       NOT NULL,
+    `password`   varchar(255)                       NOT NULL,
+    `username`   varchar(255)                       NOT NULL,
+    `role`       enum ('ADMIN','CUSTOMER','SELLER') NOT NULL,
+    `created_at` datetime(6) DEFAULT NULL,
+    `updated_at` datetime(6) DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+```
+
+
+### 상품 검수용 테이블(pending_products)
+
+```sql
+CREATE TABLE `pending_products`
+(
+    `id`               bigint                                 NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `price`            decimal(10, 2)                         NOT NULL,
+    `name`             varchar(255)                           NOT NULL,
+    `description`      text,
+    `seller_id`        bigint                                 NOT NULL,
+    `status`           enum ('PENDING','APPROVED','REJECTED') NOT NULL,
+    `submitted_at`     datetime(6)                            NOT NULL,
+    `reviewed_at`      datetime(6)  DEFAULT NULL,
+    `reviewed_by`      bigint       DEFAULT NULL,
+    `rejection_reason` varchar(255) DEFAULT NULL,
+    `created_at`       datetime(6)  DEFAULT NULL,
+    `updated_at`       datetime(6)  DEFAULT NULL,
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+```
+
+### 실제 상품 테이블(products)
+
+```sql
+ CREATE TABLE `products`
+ (
+     `id`                 bigint         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     `price`              decimal(10, 2) NOT NULL,
+     `name`               varchar(255)   NOT NULL,
+     `description`        text,
+     `seller_id`          bigint         NOT NULL,
+     `pending_product_id` bigint         NOT NULL,
+     `created_at`         datetime(6) DEFAULT NULL,
+     `updated_at`         datetime(6) DEFAULT NULL,
+ ) ENGINE = InnoDB
+   DEFAULT CHARSET = utf8mb4;
+```
 
 # Bulk Insert 테스트
 
