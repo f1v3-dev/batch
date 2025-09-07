@@ -2,8 +2,8 @@ package com.f1v3.batch.service;
 
 import com.f1v3.batch.domain.Product;
 import com.f1v3.batch.dummy.ProductDummy;
-import com.f1v3.batch.repository.ProductBulkRepository;
-import com.f1v3.batch.repository.ProductRepository;
+import com.f1v3.batch.repository.product.ProductBulkRepository;
+import com.f1v3.batch.repository.product.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
