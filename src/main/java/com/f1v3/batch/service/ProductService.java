@@ -1,0 +1,35 @@
+package com.f1v3.batch.service;
+
+import com.f1v3.batch.domain.Product;
+import com.f1v3.batch.repository.ProductBulkRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.IntStream;
+
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductBulkRepository repository;
+
+    public void createProducts(int count) {
+        List<Product> products = createRandomProducts(count);
+        repository.bulkInsertWithPreparedStatement(products);
+    }
+
+    private List<Product> createRandomProducts(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> Product.builder()
+                        .name("테스트 상품 " + i)
+                        .description("테스트 상품 설명 " + i + " - 이것은 성능 테스트를 위한 더미 데이터입니다.")
+                        .price(BigDecimal.valueOf(1000 + (i % 10000)))
+                        .sellerId((long) (i % 1000 + 1))
+                        .pendingProductId((long) (i + 1))
+                        .build())
+                .toList();
+    }
+
+}
