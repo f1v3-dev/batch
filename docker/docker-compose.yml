@@ -7,3 +7,5 @@ services:
     environment:
       MYSQL_DATABASE: batch
       MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
