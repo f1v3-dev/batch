@@ -12,7 +12,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "pending_products")
+@Table(name = "pending_products",
+        indexes = {
+                @Index(
+                        name = "idx_pending_products_status",
+                        columnList = "status"
+                )
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PendingProduct extends BaseEntity {
 
@@ -48,6 +54,9 @@ public class PendingProduct extends BaseEntity {
     @Column(name = "rejection_reason")
     private String rejectionReason;
 
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
     @Builder
     public PendingProduct(String name, String description, BigDecimal price, Long sellerId) {
         this.name = name;
@@ -69,5 +78,10 @@ public class PendingProduct extends BaseEntity {
         this.reviewedAt = LocalDateTime.now();
         this.reviewedBy = adminId;
         this.rejectionReason = reason;
+    }
+
+    public void executeProcessing() {
+        this.status = ProductStatus.PROCESSED;
+        this.processedAt = LocalDateTime.now();
     }
 }

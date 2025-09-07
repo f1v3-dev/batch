@@ -4,5 +4,6 @@ public enum ProductStatus {
     PENDING,
     APPROVED,
     REJECTED,
+    PROCESSED,
     ;
 }
