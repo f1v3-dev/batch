@@ -1,0 +1,8 @@
+### CREATE PRODUCTS WITH MIXED STATUS (APPROVED: 100만, REJECTED: 50만, PENDING: 50만)
+POST http://localhost:8080/api/products/mixed-status
+
+### MySQL Search v1. LIKE 검색
+GET http://localhost:8080/api/products/pending/search/v1?keyword=adidas
+
+### MySQL Search  v2. FULL TEXT INDEX 검색
+GET http://localhost:8080/api/products/pending/search/v2?keyword=adidas
