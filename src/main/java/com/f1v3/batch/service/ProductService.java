@@ -1,14 +1,16 @@
 package com.f1v3.batch.service;
 
 import com.f1v3.batch.domain.Product;
-import com.f1v3.batch.repository.ProductBulkRepository;
+import com.f1v3.batch.repository.product.ProductBulkRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -25,11 +27,10 @@ public class ProductService {
                 .mapToObj(i -> Product.builder()
                         .name("테스트 상품 " + i)
                         .description("테스트 상품 설명 " + i + " - 이것은 성능 테스트를 위한 더미 데이터입니다.")
-                        .price(BigDecimal.valueOf(1000 + (i % 10000)))
+                        .price(BigDecimal.valueOf(1000L + (i % 10000)))
                         .sellerId((long) (i % 1000 + 1))
                         .pendingProductId((long) (i + 1))
                         .build())
                 .toList();
     }
-
 }
