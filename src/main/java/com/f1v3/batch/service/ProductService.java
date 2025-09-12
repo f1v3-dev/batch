@@ -2,9 +2,11 @@ package com.f1v3.batch.service;
 
 import com.f1v3.batch.domain.Product;
 import com.f1v3.batch.repository.product.ProductBulkRepository;
+import com.f1v3.batch.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,11 +17,12 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductBulkRepository repository;
+    private final ProductBulkRepository bulkRepository;
+    private final ProductRepository productRepository;
 
     public void createProducts(int count) {
         List<Product> products = createRandomProducts(count);
-        repository.bulkInsertWithPreparedStatement(products);
+        bulkRepository.bulkInsertWithPreparedStatement(products);
     }
 
     private List<Product> createRandomProducts(int count) {
@@ -32,5 +35,10 @@ public class ProductService {
                         .pendingProductId((long) (i + 1))
                         .build())
                 .toList();
+    }
+
+    @Transactional
+    public void deleteAllProducts() {
+        productRepository.deleteAllProducts();
     }
 }
