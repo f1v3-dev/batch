@@ -91,7 +91,7 @@ public class ProductBulkRepository {
 
         } catch (SQLException e) {
             log.error("Statement bulk insert 실패: {}", e.getMessage(), e);
-            throw new BulkInsertException("Statement bulk insert 실패", e);
+            throw new RuntimeException("Statement bulk insert 실패", e);
         }
     }
 
@@ -165,7 +165,14 @@ public class ProductBulkRepository {
 
         } catch (SQLException e) {
             log.error("PreparedStatement bulk insert 실패: {}", e.getMessage(), e);
-            throw new RuntimeException("배치 처리 중 예외 발생!");
+            throw new RuntimeException("PreparedStatement bulk insert 실패", e);
         }
+    }
+
+    private String escapeString(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("'", "''");
     }
 }

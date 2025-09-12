@@ -1,0 +1,13 @@
+### ==== BULK INSERT PERFORMANCE TESTS ====
+
+### 현재 상태 확인
+GET http://localhost:8080/api/performance/status
+
+### 데이터 정리 (테스트 전 실행)
+DELETE http://localhost:8080/api/performance/cleanup
+
+### PreparedStatement 방식 성능 테스트 (100만건, 배치사이즈: 1만)
+POST http://localhost:8080/api/performance/bulk-insert/prepared-statement?totalCount=1000000&batchSize=10000
+
+### Statement 방식 성능 테스트 (100만건, 배치사이즈: 1만)
+POST http://localhost:8080/api/performance/bulk-insert/statement?totalCount=1000000&batchSize=10000
