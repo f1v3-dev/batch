@@ -10,13 +10,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Entity
-@Table(name = "products",
-        indexes = {
-                @Index(
-                        name = "idx_products_name_description",
-                        columnList = "name, description"
-                )
-        })
+@Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
 
